@@ -1,0 +1,10 @@
+{
+    "account": "",
+    "project_id": "your-project-id",
+    "client_id": "your-client-id",
+    "client_secret": "client-secret-here",
+    "quota_project_id": "your-quota-project-id",
+    "refresh_token": "your-refresh-token-here",
+    "type": "authorized_user",
+    "universe_domain": "googleapis.com"
+}
