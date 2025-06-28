@@ -74,31 +74,10 @@ def main():
         # Credentials
         st.subheader("🔐 Authentication")
         
-        # Credentials upload option
-        credentials_option = st.radio(
-            "Choose credentials method:",
-            ["Upload JSON file", "Use file path"],
-            help="Upload your credentials file directly or specify a path to an existing file"
-        )
-        
-        if credentials_option == "Upload JSON file":
-            uploaded_credentials = st.file_uploader(
-                "Upload credentials JSON file",
-                type=['json'],
-                help="Upload your Google Cloud credentials JSON file"
-            )
-            credentials_path = None
-        else:
-            uploaded_credentials = None
-            credentials_path = st.text_input(
-                "Credentials JSON Path",
-                value="cred.json",
-                help="Path to your Google Cloud credentials JSON file"
-            )
-        
-        project_id = st.text_input(
-            "Project ID",
-            help="Your Google Cloud project ID"
+        uploaded_credentials = st.file_uploader(
+            "Upload credentials JSON file",
+            type=['json'],
+            help="Upload your Google Cloud credentials JSON file"
         )
         
         # Session management
@@ -128,44 +107,43 @@ def main():
     
     # Initialize assistant
     if 'assistant' not in st.session_state:
-        # Only initialize if we have credentials and project ID
-        if (uploaded_credentials is not None or (credentials_path and os.path.exists(credentials_path))) and project_id:
+        # Only initialize if we have credentials
+        if uploaded_credentials is not None:
             try:
-                # Handle credentials based on the selected method
-                if uploaded_credentials is not None:
-                    # Create a temporary file for uploaded credentials
-                    # Use a more persistent temporary file approach
-                    temp_dir = Path(tempfile.gettempdir()) / "medimind_credentials"
-                    temp_dir.mkdir(exist_ok=True)
-                    
-                    # Create a unique filename
-                    temp_filename = f"credentials_{uuid.uuid4().hex}.json"
-                    tmp_credentials_path = temp_dir / temp_filename
-                    
-                    # Parse and validate JSON, then write to file
-                    try:
-                        credentials_data = json.loads(uploaded_credentials.getvalue().decode('utf-8'))
-                        with open(tmp_credentials_path, 'w') as f:
-                            json.dump(credentials_data, f)
-                        st.session_state.temp_credentials_path = str(tmp_credentials_path)
-                    except json.JSONDecodeError:
-                        st.error("❌ Invalid JSON file. Please upload a valid credentials JSON file.")
-                        st.stop()
-                else:
-                    tmp_credentials_path = credentials_path
-                    st.session_state.temp_credentials_path = None
+                # Parse and validate JSON
+                try:
+                    credentials_data = json.loads(uploaded_credentials.getvalue().decode('utf-8'))
+                except json.JSONDecodeError:
+                    st.error("❌ Invalid JSON file. Please upload a valid credentials JSON file.")
+                    st.stop()
+                
+                # Extract project ID from credentials
+                project_id = credentials_data.get('project_id')
+                if not project_id:
+                    st.error("❌ Project ID not found in credentials JSON file. Please ensure your credentials file contains a 'project_id' field.")
+                    st.stop()
+                
+                # Create a temporary file for uploaded credentials
+                temp_dir = Path(tempfile.gettempdir()) / "medimind_credentials"
+                temp_dir.mkdir(exist_ok=True)
+                
+                # Create a unique filename
+                temp_filename = f"credentials_{uuid.uuid4().hex}.json"
+                tmp_credentials_path = temp_dir / temp_filename
+                
+                # Write credentials to temporary file
+                with open(tmp_credentials_path, 'w') as f:
+                    json.dump(credentials_data, f)
+                st.session_state.temp_credentials_path = str(tmp_credentials_path)
                 
                 st.session_state.assistant = HealthAssistant(str(tmp_credentials_path), project_id)
-                st.success("✅ Health Assistant initialized successfully!")
+                st.success(f"✅ Health Assistant initialized successfully with project: {project_id}")
             except Exception as e:
                 st.error(f"❌ Failed to initialize Health Assistant: {str(e)}")
                 st.stop()
         else:
             # Show instructions if credentials are missing
-            if not project_id:
-                st.warning("⚠️ Please provide a Project ID in the sidebar")
-            if uploaded_credentials is None and (not credentials_path or not os.path.exists(credentials_path)):
-                st.warning("⚠️ Please upload credentials or provide a valid credentials file path in the sidebar")
+            st.warning("⚠️ Please upload your Google Cloud credentials JSON file in the sidebar")
     
     # Text Analysis Tab
     with tab1:
