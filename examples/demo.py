@@ -1,258 +1,268 @@
 #!/usr/bin/env python3
 """
-Demo script for the Multimodal Health Assistant.
-Showcases various capabilities with sample data and examples.
+Demo script for MediMind AI - Multimodal Health Assistant
+Demonstrates the capabilities of the health assistant with sample data.
 """
 
 import sys
 import time
 from pathlib import Path
 
-# Add src to path
-sys.path.append(str(Path(__file__).parent.parent / "src"))
+# Add the parent directory to the path to import src modules
+sys.path.append(str(Path(__file__).parent.parent))
 
-from health_assistant import HealthAssistant
-from utils import create_sample_data, create_health_tips_database
-from config import SUPPORTED_LANGUAGES
+from src.health_assistant import HealthAssistant
+from src.config import SUPPORTED_LANGUAGES, HEALTH_CATEGORIES
 
 
-def print_demo_header():
-    """Print demo header."""
-    print("="*80)
-    print("🏥 MULTIMODAL HEALTH ASSISTANT - DEMO")
-    print("="*80)
-    print("This demo showcases the capabilities of the Health Assistant")
-    print("using sample data and various input types.")
-    print("="*80)
+def print_banner():
+    """Print demo banner."""
+    print("="*60)
+    print("🏥 MediMind AI - Health Assistant Demo")
+    print("="*60)
+    print("Powered by Google Gemini 2.0 API")
+    print("Text • Image • Audio Analysis")
+    print("="*60)
+
+
+def print_disclaimer():
+    """Print health disclaimer."""
+    print("\n⚠️  IMPORTANT DISCLAIMER ⚠️")
+    print("This demo is for educational purposes only.")
+    print("It is not a substitute for professional medical advice.")
+    print("Always consult healthcare professionals for medical concerns.\n")
 
 
 def demo_text_analysis(assistant):
-    """Demo text analysis capabilities."""
-    print("\n📝 TEXT ANALYSIS DEMO")
-    print("-" * 40)
+    """Demonstrate text analysis capabilities."""
+    print("📝 TEXT ANALYSIS DEMO")
+    print("-" * 30)
     
-    sample_queries = [
-        "What are the common symptoms of dehydration?",
-        "How can I improve my sleep quality?",
-        "What should I do for a mild headache?",
-        "What are the benefits of regular exercise?",
-        "How can I manage stress and anxiety?"
-    ]
+    # English text
+    print("1. English Query:")
+    query_en = "What are the common symptoms of dehydration?"
+    print(f"   Query: {query_en}")
     
-    for i, query in enumerate(sample_queries, 1):
-        print(f"\n{i}. Query: {query}")
-        print("Processing...")
-        
-        result = assistant.analyze_text(query, 'en')
-        
-        if result['success']:
-            print("✅ Success!")
-            print(f"Response: {result['response'][:200]}...")
-        else:
-            print(f"❌ Error: {result['error']}")
-        
-        time.sleep(1)  # Rate limiting simulation
+    result = assistant.process_query(text_input=query_en, language='en')
+    if result['success']:
+        print("   ✅ Response received")
+        print(f"   Response: {result['response'][:100]}...")
+    else:
+        print(f"   ❌ Error: {result['error']}")
+    
+    print()
+    
+    # Hindi text
+    print("2. Hindi Query:")
+    query_hi = "सिरदर्द के लक्षण क्या हैं?"
+    print(f"   Query: {query_hi}")
+    
+    result = assistant.process_query(text_input=query_hi, language='hi')
+    if result['success']:
+        print("   ✅ Response received")
+        print(f"   Response: {result['response'][:100]}...")
+    else:
+        print(f"   ❌ Error: {result['error']}")
+    
+    print()
+    
+    # Spanish text
+    print("3. Spanish Query:")
+    query_es = "¿Cuáles son los síntomas del resfriado común?"
+    print(f"   Query: {query_es}")
+    
+    result = assistant.process_query(text_input=query_es, language='es')
+    if result['success']:
+        print("   ✅ Response received")
+        print(f"   Response: {result['response'][:100]}...")
+    else:
+        print(f"   ❌ Error: {result['error']}")
+    
+    print()
 
 
-def demo_multilingual_support(assistant):
-    """Demo multilingual support."""
-    print("\n🌍 MULTILINGUAL SUPPORT DEMO")
-    print("-" * 40)
+def demo_health_tips(assistant):
+    """Demonstrate health tips functionality."""
+    print("💡 HEALTH TIPS DEMO")
+    print("-" * 30)
     
-    multilingual_queries = {
-        'hi': "मुझे सिरदर्द हो रहा है, क्या करूं?",
-        'es': "¿Qué debo hacer para un dolor de cabeza?",
-        'fr': "Que dois-je faire pour un mal de tête?",
-        'de': "Was soll ich bei Kopfschmerzen tun?"
-    }
+    # General tips
+    print("1. General Health Tips (English):")
+    result = assistant.get_health_tips(language='en')
+    if result['success']:
+        print("   ✅ Tips received")
+        print(f"   Tips: {result['response'][:100]}...")
+    else:
+        print(f"   ❌ Error: {result['error']}")
     
-    for lang_code, query in multilingual_queries.items():
-        lang_name = SUPPORTED_LANGUAGES.get(lang_code, lang_code)
-        print(f"\nLanguage: {lang_name} ({lang_code})")
-        print(f"Query: {query}")
-        print("Processing...")
-        
-        result = assistant.analyze_text(query, lang_code)
-        
-        if result['success']:
-            print("✅ Success!")
-            print(f"Response: {result['response'][:200]}...")
-        else:
-            print(f"❌ Error: {result['error']}")
-        
-        time.sleep(1)  # Rate limiting simulation
+    print()
+    
+    # Category-specific tips
+    print("2. Nutrition Tips (Hindi):")
+    result = assistant.get_health_tips(category="Nutrition", language='hi')
+    if result['success']:
+        print("   ✅ Tips received")
+        print(f"   Tips: {result['response'][:100]}...")
+    else:
+        print(f"   ❌ Error: {result['error']}")
+    
+    print()
+    
+    # Spanish tips
+    print("3. Exercise Tips (Spanish):")
+    result = assistant.get_health_tips(category="Exercise", language='es')
+    if result['success']:
+        print("   ✅ Tips received")
+        print(f"   Tips: {result['response'][:100]}...")
+    else:
+        print(f"   ❌ Error: {result['error']}")
+    
+    print()
 
 
-def demo_comprehensive_analysis(assistant):
-    """Demo comprehensive analysis with multiple inputs."""
-    print("\n🔍 COMPREHENSIVE ANALYSIS DEMO")
-    print("-" * 40)
+def demo_session_management(assistant):
+    """Demonstrate session management capabilities."""
+    print("📊 SESSION MANAGEMENT DEMO")
+    print("-" * 30)
     
-    # Simulate comprehensive analysis with text and description
-    text_input = "I've been feeling dizzy and tired for the past few days"
-    image_description = "A red rash on the arm"
+    # Get session summary
+    print("1. Session Summary:")
+    summary = assistant.get_session_summary()
+    if summary['success']:
+        print(f"   ✅ Total Queries: {summary['total_queries']}")
+        print(f"   ✅ Successful: {summary['successful_queries']}")
+        print(f"   ✅ Success Rate: {summary['success_rate']}%")
+        print(f"   ✅ Duration: {summary['session_duration_minutes']} minutes")
+        
+        if summary['language_stats']:
+            print(f"   ✅ Language Usage: {summary['language_stats']}")
+        if summary['input_type_stats']:
+            print(f"   ✅ Input Types: {summary['input_type_stats']}")
+    else:
+        print(f"   ❌ Error: {summary['error']}")
     
-    print(f"Text Input: {text_input}")
-    print(f"Image Description: {image_description}")
-    print("Processing comprehensive analysis...")
+    print()
     
-    result = assistant.comprehensive_analysis(
-        text_input=text_input,
-        image_path=None,  # No actual image file in demo
-        audio_path=None,  # No actual audio file in demo
+    # Save session
+    print("2. Save Session:")
+    save_result = assistant.save_session_to_file("demo_session.json")
+    if save_result['success']:
+        print(f"   ✅ Session saved to: {save_result['filepath']}")
+    else:
+        print(f"   ❌ Error: {save_result['error']}")
+    
+    print()
+
+
+def demo_language_support():
+    """Demonstrate language support."""
+    print("🌍 LANGUAGE SUPPORT DEMO")
+    print("-" * 30)
+    
+    print("Supported Languages:")
+    for code, name in SUPPORTED_LANGUAGES.items():
+        print(f"   • {code} - {name}")
+    
+    print()
+    print("Health Categories:")
+    for category in HEALTH_CATEGORIES:
+        print(f"   • {category}")
+    
+    print()
+
+
+def run_quick_demo(assistant):
+    """Run a quick demo with basic functionality."""
+    print("🚀 QUICK DEMO MODE")
+    print("=" * 30)
+    
+    # Single text query
+    print("Testing text analysis...")
+    result = assistant.process_query(
+        text_input="What are the symptoms of a common cold?",
         language='en'
     )
     
     if result['success']:
-        print("✅ Success!")
-        print(f"Response: {result['response'][:300]}...")
+        print("✅ Text analysis working!")
+        print(f"Response: {result['response'][:150]}...")
     else:
-        print(f"❌ Error: {result['error']}")
-
-
-def demo_session_management(assistant):
-    """Demo session management features."""
-    print("\n📊 SESSION MANAGEMENT DEMO")
-    print("-" * 40)
+        print(f"❌ Text analysis failed: {result['error']}")
     
-    # Get session summary
+    print()
+    
+    # Health tips
+    print("Testing health tips...")
+    result = assistant.get_health_tips(language='en')
+    
+    if result['success']:
+        print("✅ Health tips working!")
+        print(f"Tips: {result['response'][:150]}...")
+    else:
+        print(f"❌ Health tips failed: {result['error']}")
+    
+    print()
+    
+    # Session summary
+    print("Testing session management...")
     summary = assistant.get_session_summary()
     
-    print(f"Session ID: {summary['session_id']}")
-    print(f"Total Interactions: {summary['total_interactions']}")
-    print(f"Session Duration: {summary['session_duration']:.1f} seconds")
-    
-    if summary['interactions_by_type']:
-        print("\nInteractions by Type:")
-        for input_type, count in summary['interactions_by_type'].items():
-            print(f"  • {input_type}: {count}")
-    
-    # Export session data
-    try:
-        output_path = assistant.export_session_data()
-        print(f"\n✅ Session data exported to: {output_path}")
-    except Exception as e:
-        print(f"❌ Error exporting session data: {e}")
+    if summary['success']:
+        print("✅ Session management working!")
+        print(f"Total queries: {summary['total_queries']}")
+    else:
+        print(f"❌ Session management failed: {summary['error']}")
 
 
-def demo_health_tips(assistant):
-    """Demo health tips database."""
-    print("\n💡 HEALTH TIPS DEMO")
-    print("-" * 40)
-    
-    tips = create_health_tips_database()
-    
-    for category, tip_list in tips.items():
-        print(f"\n🏷️ {category}:")
-        for i, tip in enumerate(tip_list[:3], 1):  # Show first 3 tips per category
-            print(f"  {i}. {tip}")
-
-
-def demo_error_handling(assistant):
-    """Demo error handling capabilities."""
-    print("\n⚠️ ERROR HANDLING DEMO")
-    print("-" * 40)
-    
-    # Test with empty text
-    print("1. Testing empty text input...")
-    result = assistant.analyze_text("", "en")
-    if not result['success']:
-        print(f"✅ Properly handled: {result['error']}")
-    
-    # Test with unsupported language
-    print("\n2. Testing unsupported language...")
-    result = assistant.analyze_text("Test query", "xx")
-    if not result['success']:
-        print(f"✅ Properly handled: {result['error']}")
-    
-    # Test with non-existent file
-    print("\n3. Testing non-existent image file...")
-    result = assistant.analyze_image("non_existent_file.jpg", "")
-    if not result['success']:
-        print(f"✅ Properly handled: {result['error']}")
-
-
-def run_full_demo():
-    """Run the complete demo."""
-    print_demo_header()
-    
-    # Initialize assistant (you'll need valid credentials)
-    try:
-        assistant = HealthAssistant()
-        print("✅ Health Assistant initialized successfully!")
-    except Exception as e:
-        print(f"❌ Failed to initialize Health Assistant: {e}")
-        print("Please ensure you have valid credentials configured.")
-        return
-    
-    # Run demos
-    try:
-        demo_text_analysis(assistant)
-        demo_multilingual_support(assistant)
-        demo_comprehensive_analysis(assistant)
-        demo_session_management(assistant)
-        demo_health_tips(assistant)
-        demo_error_handling(assistant)
-        
-        print("\n" + "="*80)
-        print("🎉 DEMO COMPLETED SUCCESSFULLY!")
-        print("="*80)
-        print("The Multimodal Health Assistant demo has showcased:")
-        print("• Text analysis with health queries")
-        print("• Multilingual support (English, Hindi, Spanish, French, German)")
-        print("• Comprehensive analysis capabilities")
-        print("• Session management and data export")
-        print("• Health tips database")
-        print("• Robust error handling")
-        print("\nFor more features, try the interactive mode or web interface!")
-        
-    except Exception as e:
-        print(f"❌ Demo failed with error: {e}")
-
-
-def run_quick_demo():
-    """Run a quick demo with minimal API calls."""
-    print_demo_header()
-    print("🚀 QUICK DEMO MODE")
-    
-    try:
-        assistant = HealthAssistant()
-        print("✅ Health Assistant initialized successfully!")
-        
-        # Single text analysis demo
-        print("\n📝 Quick Text Analysis Demo")
-        print("-" * 30)
-        
-        query = "What are the benefits of drinking water?"
-        print(f"Query: {query}")
-        
-        result = assistant.analyze_text(query, 'en')
-        
-        if result['success']:
-            print("✅ Success!")
-            print(f"Response: {result['response'][:200]}...")
-        else:
-            print(f"❌ Error: {result['error']}")
-        
-        # Session summary
-        summary = assistant.get_session_summary()
-        print(f"\n📊 Session Summary: {summary['total_interactions']} interactions")
-        
-        print("\n🎉 Quick demo completed!")
-        
-    except Exception as e:
-        print(f"❌ Quick demo failed: {e}")
-
-
-if __name__ == "__main__":
+def main():
+    """Main demo function."""
     import argparse
     
-    parser = argparse.ArgumentParser(description="Health Assistant Demo")
-    parser.add_argument("--quick", action="store_true", help="Run quick demo with minimal API calls")
+    parser = argparse.ArgumentParser(description="MediMind AI Health Assistant Demo")
+    parser.add_argument('--quick', action='store_true', help='Run quick demo only')
+    parser.add_argument('--credentials', default='cred.json', help='Path to credentials file')
+    parser.add_argument('--project-id', help='Google Cloud project ID')
     
     args = parser.parse_args()
     
+    # Print banner and disclaimer
+    print_banner()
+    print_disclaimer()
+    
+    # Initialize health assistant
+    try:
+        print("🔧 Initializing Health Assistant...")
+        assistant = HealthAssistant(args.credentials, args.project_id)
+        print("✅ Health Assistant initialized successfully!")
+        print()
+    except Exception as e:
+        print(f"❌ Failed to initialize Health Assistant: {e}")
+        print("\n💡 Make sure you have:")
+        print("   • Valid credentials file (cred.json)")
+        print("   • Google Cloud project with Vertex AI enabled")
+        print("   • Proper permissions set up")
+        return
+    
     if args.quick:
-        run_quick_demo()
+        run_quick_demo(assistant)
     else:
-        run_full_demo() 
+        # Run full demo
+        demo_language_support()
+        print()
+        
+        demo_text_analysis(assistant)
+        print()
+        
+        demo_health_tips(assistant)
+        print()
+        
+        demo_session_management(assistant)
+        print()
+    
+    print("🎉 Demo completed!")
+    print("\n💡 Try running with --quick for a faster demo")
+    print("💡 Use --help for more options")
+
+
+if __name__ == "__main__":
+    main() 

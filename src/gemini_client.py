@@ -5,6 +5,7 @@ Handles authentication and API interactions with Google's Gemini 2.0 model.
 import json
 import os
 import time
+import base64
 from typing import Optional, Dict, Any, List
 from pathlib import Path
 
@@ -198,6 +199,18 @@ class GeminiClient:
             with open(image_path, 'rb') as img_file:
                 image_data = img_file.read()
             
+            # Determine MIME type based on file extension
+            file_ext = image_path.suffix.lower()
+            mime_type_map = {
+                '.jpg': 'image/jpeg',
+                '.jpeg': 'image/jpeg',
+                '.png': 'image/png',
+                '.bmp': 'image/bmp',
+                '.tiff': 'image/tiff',
+                '.webp': 'image/webp'
+            }
+            mime_type = mime_type_map.get(file_ext, 'image/jpeg')
+            
             # Create a health-focused prompt for image analysis
             prompt = f"""
             You are a health assistant analyzing an image. Please provide helpful 
@@ -216,10 +229,20 @@ class GeminiClient:
             Always consult healthcare professionals for proper diagnosis and treatment.
             """
             
-            # Create content with text and image
+            # Create content with text and image using the correct format
             contents = [
-                prompt,
-                types.Part.from_data(image_data, mime_type="image/jpeg")
+                {
+                    "role": "user",
+                    "parts": [
+                        {"text": prompt},
+                        {
+                            "inline_data": {
+                                "mime_type": mime_type,
+                                "data": base64.b64encode(image_data).decode('utf-8')
+                            }
+                        }
+                    ]
+                }
             ]
             
             # Generate content with image
@@ -269,6 +292,17 @@ class GeminiClient:
             with open(audio_path, 'rb') as audio_file:
                 audio_data = audio_file.read()
             
+            # Determine MIME type based on file extension
+            file_ext = audio_path.suffix.lower()
+            mime_type_map = {
+                '.wav': 'audio/wav',
+                '.mp3': 'audio/mpeg',
+                '.m4a': 'audio/mp4',
+                '.flac': 'audio/flac',
+                '.ogg': 'audio/ogg'
+            }
+            mime_type = mime_type_map.get(file_ext, 'audio/wav')
+            
             # Create a health-focused prompt for audio analysis
             prompt = f"""
             You are a health assistant analyzing audio content. Please provide helpful 
@@ -286,10 +320,20 @@ class GeminiClient:
             Always consult healthcare professionals for proper diagnosis and treatment.
             """
             
-            # Create content with text and audio
+            # Create content with text and audio using the correct format
             contents = [
-                prompt,
-                types.Part.from_data(audio_data, mime_type="audio/wav")
+                {
+                    "role": "user",
+                    "parts": [
+                        {"text": prompt},
+                        {
+                            "inline_data": {
+                                "mime_type": mime_type,
+                                "data": base64.b64encode(audio_data).decode('utf-8')
+                            }
+                        }
+                    ]
+                }
             ]
             
             # Generate content with audio

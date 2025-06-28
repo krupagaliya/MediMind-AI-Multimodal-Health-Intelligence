@@ -20,6 +20,73 @@ from .config import (
 )
 
 
+def save_session(session_data: Dict[str, Any], filepath: Path) -> None:
+    """
+    Save session data to a JSON file.
+    
+    Args:
+        session_data: Session data dictionary
+        filepath: Path to save the session file
+    """
+    try:
+        # Ensure output directory exists
+        filepath.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Save session data
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump(session_data, f, indent=2, ensure_ascii=False, default=str)
+            
+    except Exception as e:
+        raise Exception(f"Failed to save session: {str(e)}")
+
+
+def load_session(filepath: str) -> Dict[str, Any]:
+    """
+    Load session data from a JSON file.
+    
+    Args:
+        filepath: Path to the session file
+        
+    Returns:
+        Session data dictionary
+    """
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            session_data = json.load(f)
+        return session_data
+        
+    except Exception as e:
+        raise Exception(f"Failed to load session: {str(e)}")
+
+
+def get_file_info(filepath: str) -> Dict[str, Any]:
+    """
+    Get information about a file.
+    
+    Args:
+        filepath: Path to the file
+        
+    Returns:
+        Dictionary containing file information
+    """
+    try:
+        path = Path(filepath)
+        if not path.exists():
+            return {'error': 'File not found'}
+        
+        stat = path.stat()
+        return {
+            'name': path.name,
+            'size': stat.st_size,
+            'modified': stat.st_mtime,
+            'extension': path.suffix.lower(),
+            'exists': True
+        }
+        
+    except Exception as e:
+        return {'error': str(e)}
+
+
 def validate_file_path(file_path: str, file_type: str = 'any') -> Tuple[bool, str]:
     """
     Validate if a file path exists and has the correct format.

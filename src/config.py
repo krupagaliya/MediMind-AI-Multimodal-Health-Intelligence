@@ -32,16 +32,11 @@ Always consult with a qualified healthcare provider for medical concerns.
 Never disregard professional medical advice or delay seeking it because of information provided by this assistant.
 """
 
-# Multilingual support
+# Multilingual support - Limited to 3 languages
 SUPPORTED_LANGUAGES = {
     'en': 'English',
     'hi': 'Hindi',
-    'es': 'Spanish',
-    'fr': 'French',
-    'de': 'German',
-    'ja': 'Japanese',
-    'ko': 'Korean',
-    'zh': 'Chinese'
+    'es': 'Spanish'
 }
 
 # Health categories for better organization
