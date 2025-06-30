@@ -25,7 +25,7 @@ A sophisticated health assistant powered by Google's Gemini 2.0 API that can ana
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd medi-mind-ai
+   cd 'MediMind-AI-Multimodal-Health-Intelligence'
    ```
 
 2. **Install dependencies**
