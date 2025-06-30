@@ -36,7 +36,6 @@ A sophisticated health assistant powered by Google's Gemini 2.0 API that can ana
 3. **Set up credentials**
    - Download your Google Cloud service account credentials JSON file
    - Place it in the project root as `cred.json`
-   - Or specify a custom path using the `--credentials` flag
 
 4. **Run the application**
 
@@ -237,6 +236,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 🙏 Acknowledgments
 
 - Google Gemini 2.0 API
+- AI Sprint 2025 #AISprint 
 - Streamlit for the web interface
 - The open-source community
 
