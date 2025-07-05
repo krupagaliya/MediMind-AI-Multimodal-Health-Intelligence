@@ -46,7 +46,7 @@ def demo_text_analysis(assistant):
     result = assistant.process_query(text_input=query_en, language='en')
     if result['success']:
         print("   ✅ Response received")
-        print(f"   Response: {result['response'][:100]}...")
+        print(f"   Response: {result['response'][:500]}...")
     else:
         print(f"   ❌ Error: {result['error']}")
     

@@ -1,6 +1,12 @@
 # 🏥 MediMind AI - Multimodal Health Assistant
 
-A sophisticated health assistant powered by Google's Gemini 2.0 API that can analyze text, images, and audio to provide health-related insights and recommendations.
+## 🎬 Demo
+
+---![MediMind AI Demo](output/demo.gif)
+
+Watch the demo GIF above to see MediMind AI in action!
+
+### A sophisticated health assistant powered by Google's Gemini 2.0 API that can analyze text, images, and audio to provide health-related insights and recommendations.
 
 ## 🌟 Features
 
