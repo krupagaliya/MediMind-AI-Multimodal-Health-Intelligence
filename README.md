@@ -2,7 +2,7 @@
 
 ## 🎬 Demo
 
----![MediMind AI Demo](output/demo.gif)
+![MediMind AI Demo](output/demo.gif)
 
 Watch the demo GIF above to see MediMind AI in action!
 
@@ -24,7 +24,7 @@ Watch the demo GIF above to see MediMind AI in action!
 ### Prerequisites
 
 - Python 3.8 or higher
-- Google Cloud Platform account with Vertex AI enabled
+- Google Cloud Platform account with Vertex AI enabled and Places API
 - Gemini 2.0 API access
 
 ### Installation
@@ -134,14 +134,6 @@ To use the emergency hospital finder feature, you'll need a Google Maps API key:
 
 3. **Usage**
    - For Streamlit app: Enter the API key in the Emergency tab interface
-
-### Environment Variables (Optional)
-
-```bash
-export GOOGLE_APPLICATION_CREDENTIALS="path/to/cred.json"
-export GOOGLE_CLOUD_PROJECT="your-project-id"
-export GOOGLE_CLOUD_LOCATION="us-central1"
-```
 
 ## 📖 Usage Examples
 
@@ -265,7 +257,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 🙏 Acknowledgments
 
 - Google Gemini 2.0 API
-- AI Sprint 2025 #AISprint 
+- GDE AI Sprint 2025 #AISprint 
 - Streamlit for the web interface
 - The open-source community
 
