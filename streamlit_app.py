@@ -103,7 +103,7 @@ def main():
                 st.error("No active session")
     
     # Main content
-    tab1, tab2, tab3, tab4 = st.tabs(["📝 Text", "🖼️ Image", "🎵 Audio", "💡 Health Tips"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["📝 Text", "🖼️ Image", "🎵 Audio", "💡 Health Tips", "🚨 Emergency"])
     
     # Initialize assistant
     if 'assistant' not in st.session_state:
@@ -291,6 +291,179 @@ def main():
                 st.error(f"Error: {result['error']}")
                 st.markdown('</div>', unsafe_allow_html=True)
     
+    # Emergency Tab
+    with tab5:
+        st.header("🚨 Emergency")
+        
+        # Emergency numbers section
+        st.subheader("📞 Emergency Numbers")
+        
+        # Create columns for emergency numbers
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("""
+            <div style="background-color: #dc3545; color: white; padding: 1rem; border-radius: 5px; text-align: center; margin-bottom: 1rem;">
+                <h2 style="color: white; margin: 0;">📞 108</h2>
+                <p style="margin: 0;">National Medical Emergency (India)</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+        with col2:
+            st.markdown("""
+            <div style="background-color: #fd7e14; color: white; padding: 1rem; border-radius: 5px; text-align: center; margin-bottom: 1rem;">
+                <h2 style="color: white; margin: 0;">📞 102</h2>
+                <p style="margin: 0;">Ambulance Service (India)</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Additional emergency numbers
+        st.subheader("🌍 Other Emergency Numbers")
+        emergency_numbers = {
+            "911": "Emergency Services (USA)",
+            "112": "Emergency Services (Europe)"
+        }
+        
+        for number, description in emergency_numbers.items():
+            st.write(f"📞 **{number}**: {description}")
+        
+        st.markdown("---")
+        
+        # Hospital finder section
+        st.subheader("🏥 Find Nearby Hospitals")
+        
+        # Add Google API key input
+        google_api_key = st.text_input(
+            "Enter Google Maps API Key",
+            type="password",
+            help="Required for finding nearby hospitals. Get your API key from Google Cloud Console."
+        )
+        
+        # Help section for getting API key
+        with st.expander("🔑 How to get Google Maps API Key"):
+            st.markdown("""
+            **Step-by-step guide to get your Google Maps API key:**
+            
+            1. **Go to Google Cloud Console**
+               - Visit [Google Cloud Console](https://console.cloud.google.com/)
+               - Select or create a project
+            
+            2. **Enable Required APIs**
+               - Navigate to "APIs & Services" > "Library"
+               - Search for and enable:
+                 - **Places API** (for finding hospitals)
+            
+            3. **Create API Key**
+               - Go to "APIs & Services" > "Credentials"
+               - Click "Create Credentials" > "API Key"
+               - Copy the generated API key
+            
+            4. **Secure Your API Key (Optional)**
+               - Click on your API key to edit it
+               - Under "API restrictions", select "Restrict key"
+               - Choose: Places API
+               - Set application restrictions as needed
+            
+            5. **Use Your API Key**
+               - Paste the API key in the field above
+               - Keep it secure and don't share publicly
+            
+            **💡 Tip:** The API key is free for moderate usage. 
+            """)
+        
+        st.markdown("---")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            search_radius = st.selectbox(
+                "Search Radius",
+                options=[1000, 2000, 5000, 10000],
+                format_func=lambda x: f"{x/1000:.0f} km",
+                index=1,
+                help="Select the search radius for finding hospitals"
+            )
+        
+        with col2:
+            manual_location = st.checkbox(
+                "Use manual location",
+                help="Check this to enter custom coordinates instead of auto-detecting"
+            )
+        
+        # Manual location inputs
+        if manual_location:
+            col1, col2 = st.columns(2)
+            with col1:
+                latitude = st.number_input("Latitude", value=0.0, format="%.6f")
+            with col2:
+                longitude = st.number_input("Longitude", value=0.0, format="%.6f")
+        else:
+            latitude = longitude = None
+        
+        if st.button("🔍 Find Hospitals", type="primary"):
+            if not google_api_key:
+                st.error("❌ Please enter your Google Maps API key")
+            else:
+                try:
+                    # Import and initialize the emergency hospital finder
+                    from src.emergency_hospital import EmergencyHospitalFinder
+                    
+                    finder = EmergencyHospitalFinder(google_api_key)
+                    
+                    with st.spinner("Finding nearby hospitals..."):
+                        emergency_info = finder.get_emergency_info(
+                            lat=latitude if manual_location else None,
+                            lon=longitude if manual_location else None,
+                            radius=search_radius
+                        )
+                    
+                    if emergency_info["success"]:
+                        if emergency_info["location"]:
+                            st.success(f"📍 Location: {emergency_info['location']}")
+                        
+                        hospitals = emergency_info["hospitals"]
+                        
+                        if hospitals:
+                            st.success(f"✅ Found {len(hospitals)} hospitals nearby")
+                            
+                            for idx, hospital in enumerate(hospitals, 1):
+                                with st.expander(f"{idx}. {hospital['name']} (⭐ {hospital['rating']})"):
+                                    st.write(f"📍 **Address**: {hospital['address']}")
+                                    st.write(f"📞 **Phone**: {hospital['phone']}")
+                                    
+                                    if hospital['website'] != "Website not available":
+                                        st.write(f"🌐 **Website**: {hospital['website']}")
+                                    
+                                    # Phone number as a clickable link
+                                    if hospital['phone'] != "Phone not available":
+                                        st.markdown(f"📞 [Call {hospital['phone']}](tel:{hospital['phone'].replace(' ', '').replace('(', '').replace(')', '').replace('-', '')})")
+                                    
+                                    if hospital['opening_hours']:
+                                        st.write("🕐 **Opening Hours**:")
+                                        for hours in hospital['opening_hours'][:3]:  # Show first 3 days
+                                            st.write(f"   • {hours}")
+                        else:
+                            st.warning("❌ No hospitals found in the specified radius")
+                    else:
+                        st.error(f"❌ Error: {emergency_info['error']}")
+                        
+                except ImportError:
+                    st.error("❌ Emergency module not found. Please ensure src/emergency_hospital.py exists.")
+                except Exception as e:
+                    st.error(f"❌ Error: {str(e)}")
+        
+        # Important disclaimer
+        st.markdown("---")
+        st.markdown("""
+        <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 1rem; margin: 1rem 0;">
+            <h4 style="color: #856404; margin-top: 0;">⚠️ Emergency Disclaimer</h4>
+            <p style="color: #856404; margin-bottom: 0;">
+                In case of a medical emergency, call emergency services immediately. 
+                This tool is for informational purposes only and should not delay emergency care.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
     # Footer
     st.markdown("---")
     st.markdown(

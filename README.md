@@ -7,6 +7,7 @@ A sophisticated health assistant powered by Google's Gemini 2.0 API that can ana
 - **📝 Text Analysis**: Answer health questions and provide medical information
 - **🖼️ Image Analysis**: Analyze health-related images (rashes, medications, medical devices)
 - **🎵 Audio Analysis**: Process spoken health concerns and symptoms
+- **🚨 Emergency Services**: Quick access to emergency numbers and nearby hospital finder
 - **🌍 Multilingual Support**: Support for English, Hindi, and Spanish
 - **📊 Session Management**: Track interactions and export data
 - **💡 Health Tips Database**: Curated health advice by category
@@ -77,6 +78,7 @@ medi-mind-ai/
 │   ├── config.py              # Configuration settings
 │   ├── gemini_client.py       # Gemini API client
 │   ├── health_assistant.py    # Main health assistant class
+│   ├── emergency_hospital.py  # Emergency hospital finder
 │   └── utils.py               # Utility functions
 ├── examples/
 │   └── demo.py                # Demo script
@@ -107,6 +109,25 @@ medi-mind-ai/
 4. **Download Credentials**
    - Create and download a JSON key for the service account
    - Save as `cred.json` in the project root
+
+### Google Maps API Setup (For Emergency Hospital Finder)
+
+To use the emergency hospital finder feature, you'll need a Google Maps API key:
+
+1. **Enable Google Maps APIs**
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Navigate to "APIs & Services" > "Library"
+   - Search for and enable the following API:
+     - **Places API** (for finding nearby hospitals)
+     
+
+2. **Create API Key**
+   - Go to "APIs & Services" > "Credentials"
+   - Click "Create Credentials" > "API Key"
+   - Copy the generated API key
+
+3. **Usage**
+   - For Streamlit app: Enter the API key in the Emergency tab interface
 
 ### Environment Variables (Optional)
 
@@ -150,6 +171,20 @@ result = assistant.process_query(
 )
 print(result['response'])
 ```
+
+### Emergency Services Features
+
+- **Auto-location detection** via IP address
+- **Manual location input** with custom coordinates
+- **Nearby hospital search** with customizable radius (1-10km)
+- **Detailed hospital information** including:
+  - Phone numbers (clickable in web interface)
+  - Addresses
+  - Ratings
+  - Websites
+  - Opening hours
+- **Emergency numbers** prominently displayed
+- **Professional emergency UI** with proper disclaimers
 
 ## 🌍 Multilingual Support
 
