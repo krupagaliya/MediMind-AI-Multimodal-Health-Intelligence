@@ -91,7 +91,7 @@ medi-mind-ai/
 
 ## 🔧 Configuration
 
-### Credentials Setup
+### VertexAI Credentials Setup
 
 1. **Create a Google Cloud Project**
    - Go to [Google Cloud Console](https://console.cloud.google.com/)
@@ -237,31 +237,19 @@ This health assistant is for **educational and informational purposes only**. It
 - Credentials are handled locally
 - Session data can be exported/deleted
 
-## 🛠️ Development
-
-### Running Tests
-```bash
-python -m pytest tests/
-```
-
-### Code Style
-```bash
-black src/ main.py streamlit_app.py
-flake8 src/ main.py streamlit_app.py
-```
 
 ### Adding New Features
 1. Update the appropriate module in `src/`
-2. Add tests in `tests/`
-3. Update documentation
-4. Test thoroughly
+2. Update documentation
+3. Test thoroughly
+4. Streamlit app updates if necessary
 
 ## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Add tests
+4. Add tests (if applicable)
 5. Submit a pull request
 
 ## 📄 License

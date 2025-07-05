@@ -220,7 +220,7 @@ def main():
     
     parser = argparse.ArgumentParser(description="MediMind AI Health Assistant Demo")
     parser.add_argument('--quick', action='store_true', help='Run quick demo only')
-    parser.add_argument('--credentials', default='cred.json', help='Path to credentials file')
+    parser.add_argument('--credentials', default='../cred.json', help='Path to credentials file')
     parser.add_argument('--project-id', help='Google Cloud project ID')
     
     args = parser.parse_args()
